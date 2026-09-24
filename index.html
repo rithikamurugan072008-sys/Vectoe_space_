@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vector Space Verification & Educational Explorer</title>
+  <meta name="description" content="An interactive educational webpage to verify vector space axioms, explore linear algebra structures, test custom questions, and evaluate all 10 vector space axioms step-by-step.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- KaTeX CSS & JS for Math Formatting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: #131b2e;
+      --bg-card-hover: #1c2742;
+      --bg-input: #0f1626;
+      --border-color: #23314d;
+      --border-accent: #3b82f6;
+      
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --accent: #06b6d4;
+      
+      --pass-bg: rgba(16, 185, 129, 0.12);
+      --pass-border: #10b981;
+      --pass-text: #34d399;
+      
+      --fail-bg: rgba(239, 68, 68, 0.12);
+      --fail-border: #ef4444;
+      --fail-text: #f87171;
+      
+      --neutral-bg: rgba(107, 114, 128, 0.12);
+      --neutral-border: #6b7280;
+      
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+      --radius: 14px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 80px;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    /* Header Styling */
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+      padding: 30px 20px 10px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--primary-light);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.75rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 70%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Card Panels */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+
+    .panel:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .panel-title svg {
+      color: var(--accent);
+    }
+
+    /* Section 1: Definition Box */
+    .definition-box {
+      background: linear-gradient(145deg, rgba(19, 27, 46, 0.9), rgba(15, 22, 38, 0.95));
+      border-left: 4px solid var(--primary);
+    }
+
+    .math-block {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      font-size: 1.05rem;
+      overflow-x: auto;
+    }
+
+    .components-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .component-card {
+      background: rgba(15, 22, 38, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .component-card h4 {
+      color: var(--primary-light);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .component-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Section 2: Input & Preset Selector */
+    .preset-selector-group {
+      margin-bottom: 24px;
+    }
+
+    .field-label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    select, input[type="text"], textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-main);
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    select:focus, input[type="text"]:focus, textarea:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .quick-examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn-chip {
+      background: rgba(35, 49, 77, 0.5);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-chip:hover, .btn-chip.active {
+      background: var(--primary);
+      border-color: var(--primary-light);
+      color: #fff;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      transition: var(--transition);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+      background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Section 3: Axioms List */
+    .axiom-group-header {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 24px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .axiom-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .axiom-card.pass {
+      border-left: 5px solid var(--pass-border);
+    }
+
+    .axiom-card.fail {
+      border-left: 5px solid var(--fail-border);
+    }
+
+    .axiom-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(19, 27, 46, 0.4);
+    }
+
+    .axiom-header:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .axiom-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .axiom-number {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      font-family: 'Outfit', sans-serif;
+      flex-shrink: 0;
+    }
+
+    .axiom-info h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+
+    .axiom-info p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-family: 'Fira Code', monospace;
+    }
+
+    .axiom-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .axiom-badge.pass {
+      background: var(--pass-bg);
+      border: 1px solid var(--pass-border);
+      color: var(--pass-text);
+    }
+
+    .axiom-badge.fail {
+      background: var(--fail-bg);
+      border: 1px solid var(--fail-border);
+      color: var(--fail-text);
+    }
+
+    .toggle-icon {
+      color: var(--text-dim);
+      transition: transform 0.3s ease;
+    }
+
+    .axiom-card.open .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .axiom-body {
+      padding: 0 20px 20px 20px;
+      display: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(15, 22, 38, 0.5);
+    }
+
+    .axiom-card.open .axiom-body {
+      display: block;
+      padding-top: 16px;
+    }
+
+    .explanation-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .explanation-text {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      line-height: 1.7;
+    }
+
+    .counterexample-box {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      font-size: 0.92rem;
+      color: #fca5a5;
+    }
+
+    /* Section 4: Final Conclusion Hero Banner */
+    .conclusion-hero {
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      text-align: center;
+      margin-top: 40px;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .conclusion-hero.pass {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.25) 100%);
+      border: 2px solid var(--pass-border);
+      box-shadow: 0 0 35px rgba(16, 185, 129, 0.25);
+    }
+
+    .conclusion-hero.fail {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.25) 100%);
+      border: 2px solid var(--fail-border);
+      box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+    }
+
+    .conclusion-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .conclusion-hero.pass .conclusion-icon-wrap {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--pass-text);
+      border: 2px solid var(--pass-border);
+    }
+
+    .conclusion-hero.fail .conclusion-icon-wrap {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--fail-text);
+      border: 2px solid var(--fail-border);
+    }
+
+    .conclusion-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .conclusion-hero.pass .conclusion-title {
+      color: #6ee7b7;
+    }
+
+    .conclusion-hero.fail .conclusion-title {
+      color: #fca5a5;
+    }
+
+    .conclusion-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .failed-list {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .failed-tag {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid var(--fail-border);
+      color: #fecaca;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Visualizer & Interactive Sandbox */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .sandbox-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 2rem; }
+      .conclusion-title { font-size: 1.75rem; }
+    }
+
+    canvas {
+      width: 100%;
+      height: 300px;
+      background: #0b111e;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-row label {
+      width: 120px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary-light);
+    }
+
+    .val-display {
+      font-family: 'Fira Code', monospace;
+      width: 50px;
+      text-align: right;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="badge-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        Linear Algebra Educational Suite
+      </div>
+      <h1>Vector Space Verification</h1>
+      <p class="subtitle">Explore the formal mathematical definition of a Vector Space, evaluate candidate algebraic structures across all 10 fundamental axioms, and test custom problems interactively.</p>
+    </header>
+
+    <!-- SECTION 1: Formal Definition of Vector Space -->
+    <section class="panel definition-box">
+      <div class="panel-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        Definition of a Vector Space
+      </div>
+      <p>A <strong>Vector Space</strong> (or linear space) over a Field $F$ (such as $\mathbb{R}$) is a set $V$ equipped with two binary operations called <strong>vector addition</strong> ($+$) and <strong>scalar multiplication</strong> ($\cdot$) satisfying the 10 fundamental axioms below:</p>
+      
+      <div class="math-block">
+        $$\text{Vector Space: } (V, +, \cdot, F)$$
+        $$\text{Vector Addition: } + : V \times V \to V \quad \mid \quad \text{Scalar Multiplication: } \cdot : F \times V \to V$$
+      </div>
+
+      <div class="components-grid">
+        <div class="component-card">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+            1. The Set ($V$)
+          </h4>
+          <p>A non-empty set of objects called <em>vectors</em> (tuples, functions, matrices, polynomials).</p>
+        </div>
+        <div class="component-card">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"></path></svg>
+            2. Scalar Field ($F$)
+          </h4>
+          <p>A set of scalars (such as $\mathbb{R}$) for scaling elements in $V$.</p>
+        </div>
+        <div class="component-card">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+            3. Addition ($+$)
+          </h4>
+          <p>Combines any two vectors $\mathbf{u}, \mathbf{v} \in V$ to produce $\mathbf{u} + \mathbf{v} \in V$.</p>
+        </div>
+        <div class="component-card">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 12h3M18 12h3M12 3v3M12 18v3"></path></svg>
+            4. Scalar Mult ($\cdot$)
+          </h4>
+          <p>Scales a vector $\mathbf{u} \in V$ by a scalar $\alpha \in F$ to produce $\alpha \mathbf{u} \in V$.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Input & Test Structure Selection -->
+    <section class="panel">
+      <div class="panel-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        Structure & Test Question Selection
+      </div>
+
+      <div class="preset-selector-group">
+        <label for="presetSelect" class="field-label">Select Candidate Vector Space Structure or Preset:</label>
+        <select id="presetSelect" onchange="onPresetChange(this.value)">
+          <option value="r2_standard">Standard Euclidean Space: R² under standard addition & scalar multiplication (Vector Space)</option>
+          <option value="r_plus_exotic">Exotic Space: Positive Real Numbers R⁺ with u ⊕ v = uv and α ⊙ u = u^α (Vector Space)</option>
+          <option value="exotic_scalar_zero">Exotic Scalar Mult: R² with standard +, but α(x, y) = (αx, 0) (NOT a Vector Space)</option>
+          <option value="positive_quadrant">Non-Negative Quadrant: V = {(x, y) ∈ R² | x ≥ 0, y ≥ 0} (NOT a Vector Space)</option>
+          <option value="polynomials_le_n">Polynomials of degree ≤ n: P_n(x) under standard operations (Vector Space)</option>
+          <option value="polynomials_exact_n">Polynomials of degree EXACTLY n (NOT a Vector Space)</option>
+          <option value="matrices_2x2">Matrices: 2×2 Real Matrices M₂ₓ₂ under matrix addition & scalar mult (Vector Space)</option>
+          <option value="invertible_matrices">Matrices: Invertible 2×2 Matrices GL₂(R) (NOT a Vector Space)</option>
+          <option value="custom">Custom Test Question / Problem Statement</option>
+        </select>
+      </div>
+
+      <div class="preset-selector-group">
+        <label for="questionInput" class="field-label">Test Question / Structure Description:</label>
+        <textarea id="questionInput" placeholder="Enter or edit problem description here..."></textarea>
+      </div>
+
+      <div class="quick-examples">
+        <span style="font-size: 0.85rem; color: var(--text-dim); align-self: center;">Quick Load Preset Examples:</span>
+        <button class="btn-chip" onclick="loadPreset('r2_standard')">R² Standard</button>
+        <button class="btn-chip" onclick="loadPreset('r_plus_exotic')">R⁺ Exotic (uv, u^α)</button>
+        <button class="btn-chip" onclick="loadPreset('exotic_scalar_zero')">α(x,y)=(αx,0)</button>
+        <button class="btn-chip" onclick="loadPreset('positive_quadrant')">x≥0, y≥0 Quadrant</button>
+        <button class="btn-chip" onclick="loadPreset('polynomials_le_n')">Polynomials P_n</button>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-primary" onclick="evaluateStructure()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Evaluate All 10 Axioms
+        </button>
+      </div>
+    </section>
+
+    <!-- SECTION 3: The 10 Vector Space Axioms List -->
+    <section class="panel">
+      <div class="panel-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        The 10 Vector Space Axioms Verification
+      </div>
+
+      <!-- Axioms 1 to 5: Vector Addition -->
+      <div class="axiom-group-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+        Part A: Vector Addition Axioms (1 - 5)
+      </div>
+      <div id="additionAxiomsContainer"></div>
+
+      <!-- Axioms 6 to 10: Scalar Multiplication -->
+      <div class="axiom-group-header" style="color: var(--primary-light); margin-top: 36px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 12h3M18 12h3M12 3v3M12 18v3"></path></svg>
+        Part B: Scalar Multiplication Axioms (6 - 10)
+      </div>
+      <div id="scalarAxiomsContainer"></div>
+    </section>
+
+    <!-- SECTION 4: Final Conclusion Hero Banner -->
+    <div id="conclusionHero" class="conclusion-hero pass">
+      <div class="conclusion-icon-wrap" id="conclusionIcon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="conclusion-title" id="conclusionTitle">It IS a Vector Space</div>
+      <div class="conclusion-desc" id="conclusionDesc">All 10 vector space axioms are satisfied by this structure under the given operations.</div>
+      <div id="failedListContainer"></div>
+    </div>
+
+    <!-- SECTION 5: Interactive Visual Sandbox for Vector Addition / Scaling -->
+    <section class="panel" style="margin-top: 40px;">
+      <div class="panel-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="12" x2="21" y2="12"></line><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+        2D Vector Interactive Sandbox (Visualization)
+      </div>
+      <div class="sandbox-grid">
+        <div>
+          <canvas id="vectorCanvas" width="500" height="300"></canvas>
+        </div>
+        <div class="controls-box">
+          <p style="font-size: 0.92rem; color: var(--text-muted);">Adjust vectors $\mathbf{u} = (u_1, u_2)$ and scalar $\alpha$ to visually observe addition and scaling in 2D Cartesian space:</p>
+          
+          <div class="slider-row">
+            <label>Vector u (x):</label>
+            <input type="range" id="uX" min="-5" max="5" value="3" step="0.5" oninput="drawVectorCanvas()">
+            <span class="val-display" id="uXVal">3</span>
+          </div>
+          <div class="slider-row">
+            <label>Vector u (y):</label>
+            <input type="range" id="uY" min="-5" max="5" value="2" step="0.5" oninput="drawVectorCanvas()">
+            <span class="val-display" id="uYVal">2</span>
+          </div>
+          <div class="slider-row">
+            <label>Vector v (x):</label>
+            <input type="range" id="vX" min="-5" max="5" value="-1" step="0.5" oninput="drawVectorCanvas()">
+            <span class="val-display" id="vXVal">-1</span>
+          </div>
+          <div class="slider-row">
+            <label>Vector v (y):</label>
+            <input type="range" id="vY" min="-5" max="5" value="3" step="0.5" oninput="drawVectorCanvas()">
+            <span class="val-display" id="vYVal">3</span>
+          </div>
+          <div class="slider-row">
+            <label>Scalar α:</label>
+            <input type="range" id="scalarC" min="-3" max="3" value="1.5" step="0.5" oninput="drawVectorCanvas()">
+            <span class="val-display" id="scalarCVal">1.5</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Designed for Linear Algebra Education & Vector Space Axiom Verification • Built with HTML5, CSS3, JavaScript & KaTeX</p>
+    </footer>
+  </div>
+
+  <script>
+    // Database of Presets & Axiom Explanations based on the 10 standard axioms:
+    // 1) u + v ∈ V (Closure)
+    // 2) u + v = v + u (Commutative)
+    // 3) u + (v + w) = (u + v) + w (Associative)
+    // 4) u + 0 = u (Identity)
+    // 5) u + (-u) = 0 (Inverse)
+    // 6) α * u ∈ V (Scalar Multiplication / Closure)
+    // 7) α * (u + v) = α*u + α*v (Distributive)
+    // 8) (α + β)u = α*u + β*u (Distributive)
+    // 9) α(β * u) = (α * β)u
+    // 10) 1 · u = u
+    const PRESETS = {
+      "r2_standard": {
+        name: "Standard Euclidean Space R²",
+        question: "Is V = R² with standard vector addition (u + v = (u₁ + v₁, u₂ + v₂)) and standard scalar multiplication (α · u = (αu₁, αu₂)) a vector space over R?",
+        isVectorSpace: true,
+        axioms: [
+          {
+            num: 1,
+            title: "Closure under Addition",
+            formula: "\\mathbf{u} + \\mathbf{v} \\in V",
+            passed: true,
+            explanation: "For any (u₁, u₂), (v₁, v₂) ∈ R², their component-wise sum (u₁ + v₁, u₂ + v₂) consists of real numbers, so u + v ∈ V."
+          },
+          {
+            num: 2,
+            title: "Commutativity of Addition",
+            formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}",
+            passed: true,
+            explanation: "u + v = (u₁ + v₁, u₂ + v₂). Since real addition is commutative, u₁ + v₁ = v₁ + u₁ and u₂ + v₂ = v₂ + u₂. Thus u + v = v + u."
+          },
+          {
+            num: 3,
+            title: "Associativity of Addition",
+            formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}",
+            passed: true,
+            explanation: "Follows directly from the associativity of real addition: (u₁+(v₁+w₁), u₂+(v₂+w₂)) = ((u₁+v₁)+w₁, (u₂+v₂)+w₂)."
+          },
+          {
+            num: 4,
+            title: "Additive Identity Element",
+            formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}",
+            passed: true,
+            explanation: "The zero vector is 0 = (0, 0) ∈ R². For any u = (u₁, u₂), u + 0 = (u₁ + 0, u₂ + 0) = (u₁, u₂) = u."
+          },
+          {
+            num: 5,
+            title: "Additive Inverse Element",
+            formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}",
+            passed: true,
+            explanation: "For any u = (u₁, u₂), its additive inverse is -u = (-u₁, -u₂) ∈ R², since (u₁, u₂) + (-u₁, -u₂) = (0, 0)."
+          },
+          {
+            num: 6,
+            title: "Closure under Scalar Multiplication",
+            formula: "\\alpha \\cdot \\mathbf{u} \\in V",
+            passed: true,
+            explanation: "For any scalar α ∈ R and u = (u₁, u₂) ∈ R², α · u = (αu₁, αu₂). Since αu₁, αu₂ ∈ R, αu ∈ R²."
+          },
+          {
+            num: 7,
+            title: "Distributivity over Vector Addition",
+            formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}",
+            passed: true,
+            explanation: "α(u + v) = α(u₁+v₁, u₂+v₂) = (α(u₁+v₁), α(u₂+v₂)) = (αu₁+αv₁, αu₂+αv₂) = αu + αv."
+          },
+          {
+            num: 8,
+            title: "Distributivity over Scalar Addition",
+            formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}",
+            passed: true,
+            explanation: "(α + β)(u₁, u₂) = ((α+β)u₁, (α+β)u₂) = (αu₁+βu₁, αu₂+βu₂) = (αu₁, αu₂) + (βu₁, βu₂) = αu + βu."
+          },
+          {
+            num: 9,
+            title: "Compatibility of Scalar Multiplication",
+            formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}",
+            passed: true,
+            explanation: "α(β(u₁, u₂)) = α(βu₁, βu₂) = (α(βu₁), α(βu₂)) = ((αβ)u₁, (αβ)u₂) = (αβ)(u₁, u₂)."
+          },
+          {
+            num: 10,
+            title: "Scalar Identity Element",
+            formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}",
+            passed: true,
+            explanation: "1 · (u₁, u₂) = (1·u₁, 1·u₂) = (u₁, u₂)."
+          }
+        ]
+      },
+      "r_plus_exotic": {
+        name: "Exotic Space R⁺ (Positive Reals)",
+        question: "Let V = R⁺ = {x ∈ R | x > 0}. Define vector addition by u ⊕ v = uv and scalar multiplication by α ⊙ u = u^α for α ∈ R. Is V a vector space over R?",
+        isVectorSpace: true,
+        axioms: [
+          {
+            num: 1,
+            title: "Closure under Addition",
+            formula: "\\mathbf{u} \\oplus \\mathbf{v} \\in V",
+            passed: true,
+            explanation: "If u > 0 and v > 0, then u ⊕ v = uv > 0, so uv ∈ R⁺."
+          },
+          {
+            num: 2,
+            title: "Commutativity of Addition",
+            formula: "\\mathbf{u} \\oplus \\mathbf{v} = \\mathbf{v} \\oplus \\mathbf{u}",
+            passed: true,
+            explanation: "u ⊕ v = uv = vu = v ⊕ u (real number multiplication is commutative)."
+          },
+          {
+            num: 3,
+            title: "Associativity of Addition",
+            formula: "\\mathbf{u} \\oplus (\\mathbf{v} \\oplus \\mathbf{w}) = (\\mathbf{u} \\oplus \\mathbf{v}) \\oplus \\mathbf{w}",
+            passed: true,
+            explanation: "u ⊕ (v ⊕ w) = u(vw) = (uv)w = (u ⊕ v) ⊕ w."
+          },
+          {
+            num: 4,
+            title: "Additive Identity Element",
+            formula: "\\mathbf{u} \\oplus \\mathbf{0} = \\mathbf{u}",
+            passed: true,
+            explanation: "The identity vector 0 in this space is 1 ∈ R⁺! Indeed, u ⊕ 1 = u · 1 = u for all u ∈ R⁺."
+          },
+          {
+            num: 5,
+            title: "Additive Inverse Element",
+            formula: "\\mathbf{u} \\oplus (-\\mathbf{u}) = \\mathbf{0}",
+            passed: true,
+            explanation: "For any u ∈ R⁺, its inverse vector is 1/u ∈ R⁺, since u ⊕ (1/u) = u · (1/u) = 1 (the identity vector)."
+          },
+          {
+            num: 6,
+            title: "Closure under Scalar Multiplication",
+            formula: "\\alpha \\odot \\mathbf{u} \\in V",
+            passed: true,
+            explanation: "For any α ∈ R and u > 0, α ⊙ u = u^α. Since positive real numbers raised to any real power remain positive, u^α ∈ R⁺."
+          },
+          {
+            num: 7,
+            title: "Distributivity over Vector Addition",
+            formula: "\\alpha \\odot (\\mathbf{u} \\oplus \\mathbf{v}) = (\\alpha \\odot \\mathbf{u}) \\oplus (\\alpha \\odot \\mathbf{v})",
+            passed: true,
+            explanation: "α ⊙ (u ⊕ v) = (uv)^α = u^α v^α = (u^α) ⊕ (v^α) = (α ⊙ u) ⊕ (α ⊙ v)."
+          },
+          {
+            num: 8,
+            title: "Distributivity over Scalar Addition",
+            formula: "(\\alpha + \\beta) \\odot \\mathbf{u} = (\\alpha \\odot \\mathbf{u}) \\oplus (\\beta \\odot \\mathbf{u})",
+            passed: true,
+            explanation: "(α + β) ⊙ u = u^(α+β) = u^α · u^β = (u^α) ⊕ (u^β) = (α ⊙ u) ⊕ (β ⊙ u)."
+          },
+          {
+            num: 9,
+            title: "Compatibility of Scalar Multiplication",
+            formula: "\\alpha \\odot (\\beta \\odot \\mathbf{u}) = (\\alpha \\beta) \\odot \\mathbf{u}",
+            passed: true,
+            explanation: "α ⊙ (β ⊙ u) = α ⊙ (u^β) = (u^β)^α = u^(αβ) = (αβ) ⊙ u."
+          },
+          {
+            num: 10,
+            title: "Scalar Identity Element",
+            formula: "1 \\odot \\mathbf{u} = \\mathbf{u}",
+            passed: true,
+            explanation: "1 ⊙ u = u¹ = u."
+          }
+        ]
+      },
+      "exotic_scalar_zero": {
+        name: "Exotic Scalar Mult: α(x, y) = (αx, 0)",
+        question: "Let V = R² with standard addition u + v = (u₁ + v₁, u₂ + v₂), but non-standard scalar multiplication defined by α · (x, y) = (αx, 0). Is V a vector space over R?",
+        isVectorSpace: false,
+        axioms: [
+          { num: 1, title: "Closure under Addition", formula: "\\mathbf{u} + \\mathbf{v} \\in V", passed: true, explanation: "Standard addition yields pairs in R²." },
+          { num: 2, title: "Commutativity of Addition", formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}", passed: true, explanation: "Standard addition is commutative." },
+          { num: 3, title: "Associativity of Addition", formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}", passed: true, explanation: "Standard addition is associative." },
+          { num: 4, title: "Additive Identity Element", formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}", passed: true, explanation: "(0,0) is the additive identity." },
+          { num: 5, title: "Additive Inverse Element", formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}", passed: true, explanation: "(-x, -y) is the additive inverse." },
+          { num: 6, title: "Closure under Scalar Multiplication", formula: "\\alpha \\cdot \\mathbf{u} \\in V", passed: true, explanation: "(αx, 0) ∈ R²." },
+          { num: 7, title: "Distributivity over Vector Addition", formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}", passed: true, explanation: "α(u₁ + v₁, u₂ + v₂) = (α(u₁ + v₁), 0) = (αu₁, 0) + (αv₁, 0) = αu + αv." },
+          { num: 8, title: "Distributivity over Scalar Addition", formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}", passed: true, explanation: "(α+β)(x,y) = ((α+β)x, 0) = (αx+βx, 0) = (αx, 0) + (βx, 0)." },
+          { num: 9, title: "Compatibility of Scalar Multiplication", formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}", passed: true, explanation: "α(β(x,y)) = α(βx, 0) = (α(βx), 0) = ((αβ)x, 0) = (αβ)(x,y)." },
+          {
+            num: 10,
+            title: "Scalar Identity Element",
+            formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}",
+            passed: false,
+            explanation: "1 · (x, y) = (1·x, 0) = (x, 0). For any vector where y ≠ 0 (e.g., (1, 2)), 1 · (1, 2) = (1, 0) ≠ (1, 2).",
+            counterexample: "Take u = (1, 2) ∈ R². Then 1 · u = (1·1, 0) = (1, 0) ≠ (1, 2). Thus, Axiom 10 FAILS."
+          }
+        ]
+      },
+      "positive_quadrant": {
+        name: "Non-Negative Quadrant: V = {(x, y) ∈ R² | x ≥ 0, y ≥ 0}",
+        question: "Let V = {(x, y) ∈ R² | x ≥ 0, y ≥ 0} (the first quadrant) under standard addition and scalar multiplication over R. Is V a vector space?",
+        isVectorSpace: false,
+        axioms: [
+          { num: 1, title: "Closure under Addition", formula: "\\mathbf{u} + \\mathbf{v} \\in V", passed: true, explanation: "If u₁, u₂, v₁, v₂ ≥ 0, then u₁ + v₁ ≥ 0 and u₂ + v₂ ≥ 0." },
+          { num: 2, title: "Commutativity of Addition", formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}", passed: true, explanation: "Standard addition is commutative." },
+          { num: 3, title: "Associativity of Addition", formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}", passed: true, explanation: "Standard addition is associative." },
+          { num: 4, title: "Additive Identity Element", formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}", passed: true, explanation: "(0,0) ∈ V since 0 ≥ 0." },
+          {
+            num: 5,
+            title: "Additive Inverse Element",
+            formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}",
+            passed: false,
+            explanation: "For u = (1, 1) ∈ V, the inverse vector must be (-1, -1) so that (1,1) + (-1,-1) = (0,0). But (-1, -1) ∉ V because components are negative!",
+            counterexample: "u = (1,1) ∈ V, but -u = (-1,-1) ∉ V because -1 < 0."
+          },
+          {
+            num: 6,
+            title: "Closure under Scalar Multiplication",
+            formula: "\\alpha \\cdot \\mathbf{u} \\in V",
+            passed: false,
+            explanation: "Multiplying by a negative scalar α < 0 produces negative components.",
+            counterexample: "Let α = -1 ∈ R and u = (1, 1) ∈ V. Then α · u = (-1, -1) ∉ V."
+          },
+          { num: 7, title: "Distributivity over Vector Addition", formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}", passed: true, explanation: "Distributive property holds algebraically." },
+          { num: 8, title: "Distributivity over Scalar Addition", formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}", passed: true, explanation: "Distributive property holds algebraically." },
+          { num: 9, title: "Compatibility of Scalar Multiplication", formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}", passed: true, explanation: "Compatibility holds algebraically." },
+          { num: 10, title: "Scalar Identity Element", formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}", passed: true, explanation: "1 · (x, y) = (x, y)." }
+        ]
+      },
+      "polynomials_le_n": {
+        name: "Polynomials of Degree ≤ n",
+        question: "Let V = P_n(x) be the set of polynomials of degree at most n with real coefficients under polynomial addition and scalar multiplication. Is V a vector space?",
+        isVectorSpace: true,
+        axioms: [
+          { num: 1, title: "Closure under Addition", formula: "\\mathbf{u} + \\mathbf{v} \\in V", passed: true, explanation: "The sum of two polynomials of degree ≤ n is a polynomial of degree ≤ n." },
+          { num: 2, title: "Commutativity of Addition", formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}", passed: true, explanation: "p(x) + q(x) = q(x) + p(x)." },
+          { num: 3, title: "Associativity of Addition", formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}", passed: true, explanation: "(p(x) + q(x)) + r(x) = p(x) + (q(x) + r(x))." },
+          { num: 4, title: "Additive Identity Element", formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}", passed: true, explanation: "The zero polynomial 0(x) = 0 has degree -∞ ≤ n, and p(x) + 0(x) = p(x)." },
+          { num: 5, title: "Additive Inverse Element", formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}", passed: true, explanation: "For p(x), -p(x) has degree ≤ n and p(x) + (-p(x)) = 0(x)." },
+          { num: 6, title: "Closure under Scalar Multiplication", formula: "\\alpha \\cdot \\mathbf{u} \\in V", passed: true, explanation: "α · p(x) is a polynomial of degree ≤ n." },
+          { num: 7, title: "Distributivity over Vector Addition", formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}", passed: true, explanation: "α(p(x) + q(x)) = α·p(x) + α·q(x)." },
+          { num: 8, title: "Distributivity over Scalar Addition", formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}", passed: true, explanation: "(α + β)p(x) = α·p(x) + β·p(x)." },
+          { num: 9, title: "Compatibility of Scalar Multiplication", formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}", passed: true, explanation: "α(β·p(x)) = (αβ)p(x)." },
+          { num: 10, title: "Scalar Identity Element", formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}", passed: true, explanation: "1 · p(x) = p(x)." }
+        ]
+      },
+      "polynomials_exact_n": {
+        name: "Polynomials of Degree EXACTLY n",
+        question: "Let V be the set of polynomials of degree EXACTLY n (for n ≥ 1) together with standard polynomial operations. Is V a vector space?",
+        isVectorSpace: false,
+        axioms: [
+          {
+            num: 1,
+            title: "Closure under Addition",
+            formula: "\\mathbf{u} + \\mathbf{v} \\in V",
+            passed: false,
+            explanation: "Adding two polynomials of degree n can cancel the leading terms, resulting in a polynomial of degree < n.",
+            counterexample: "For n = 2: p(x) = x² + x and q(x) = -x². Both have degree 2. But p(x) + q(x) = x, which has degree 1 ≠ 2!"
+          },
+          { num: 2, title: "Commutativity of Addition", formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}", passed: true, explanation: "Polynomial addition is commutative." },
+          { num: 3, title: "Associativity of Addition", formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}", passed: true, explanation: "Polynomial addition is associative." },
+          {
+            num: 4,
+            title: "Additive Identity Element",
+            formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}",
+            passed: false,
+            explanation: "The zero polynomial has degree -∞, not degree n. Thus there is no zero vector in V.",
+            counterexample: "Zero polynomial 0 ∉ V because degree(0) ≠ n."
+          },
+          {
+            num: 5,
+            title: "Additive Inverse Element",
+            formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}",
+            passed: false,
+            explanation: "p(x) + (-p(x)) = 0(x), but 0(x) ∉ V."
+          },
+          {
+            num: 6,
+            title: "Closure under Scalar Multiplication",
+            formula: "\\alpha \\cdot \\mathbf{u} \\in V",
+            passed: false,
+            explanation: "Multiplying by scalar α = 0 yields the zero polynomial, which has degree -∞ ≠ n.",
+            counterexample: "0 · (xⁿ) = 0, which does not have degree n."
+          },
+          { num: 7, title: "Distributivity over Vector Addition", formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}", passed: true, explanation: "Algebraic distributivity holds." },
+          { num: 8, title: "Distributivity over Scalar Addition", formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}", passed: true, explanation: "Algebraic distributivity holds." },
+          { num: 9, title: "Compatibility of Scalar Multiplication", formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}", passed: true, explanation: "Compatibility holds." },
+          { num: 10, title: "Scalar Identity Element", formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}", passed: true, explanation: "1 · p(x) = p(x)." }
+        ]
+      },
+      "matrices_2x2": {
+        name: "2×2 Real Matrices M₂ₓ₂",
+        question: "Let V = M₂ₓ₂(R) be the set of all 2×2 matrices with real entries under standard matrix addition and scalar multiplication. Is V a vector space?",
+        isVectorSpace: true,
+        axioms: [
+          { num: 1, title: "Closure under Addition", formula: "\\mathbf{u} + \\mathbf{v} \\in V", passed: true, explanation: "Sum of two 2x2 matrices is a 2x2 matrix." },
+          { num: 2, title: "Commutativity of Addition", formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}", passed: true, explanation: "Matrix addition is commutative: A + B = B + A." },
+          { num: 3, title: "Associativity of Addition", formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}", passed: true, explanation: "(A + B) + C = A + (B + C)." },
+          { num: 4, title: "Additive Identity Element", formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}", passed: true, explanation: "Zero matrix [[0,0],[0,0]] ∈ M₂ₓ₂ satisfies A + 0 = A." },
+          { num: 5, title: "Additive Inverse Element", formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}", passed: true, explanation: "-A = [[-a,-b],[-c,-d]] ∈ M₂ₓ₂." },
+          { num: 6, title: "Closure under Scalar Multiplication", formula: "\\alpha \\cdot \\mathbf{u} \\in V", passed: true, explanation: "α A is a 2x2 real matrix." },
+          { num: 7, title: "Distributivity over Vector Addition", formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}", passed: true, explanation: "α(A + B) = αA + αB." },
+          { num: 8, title: "Distributivity over Scalar Addition", formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}", passed: true, explanation: "(α + β)A = αA + βA." },
+          { num: 9, title: "Compatibility of Scalar Multiplication", formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}", passed: true, explanation: "α(βA) = (αβ)A." },
+          { num: 10, title: "Scalar Identity Element", formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}", passed: true, explanation: "1 · A = A." }
+        ]
+      },
+      "invertible_matrices": {
+        name: "Invertible 2×2 Matrices GL₂(R)",
+        question: "Let V = GL₂(R) be the set of all invertible 2×2 matrices with real entries (det(A) ≠ 0) under standard matrix addition and scalar multiplication. Is V a vector space?",
+        isVectorSpace: false,
+        axioms: [
+          {
+            num: 1,
+            title: "Closure under Addition",
+            formula: "\\mathbf{u} + \\mathbf{v} \\in V",
+            passed: false,
+            explanation: "The sum of two invertible matrices is not necessarily invertible!",
+            counterexample: "Let A = [[1,0],[0,1]] and B = [[-1,0],[0,-1]]. Both det(A)=1 ≠ 0 and det(B)=1 ≠ 0. But A + B = [[0,0],[0,0]], which has det = 0 (not invertible)!"
+          },
+          { num: 2, title: "Commutativity of Addition", formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}", passed: true, explanation: "Matrix addition is commutative." },
+          { num: 3, title: "Associativity of Addition", formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}", passed: true, explanation: "Matrix addition is associative." },
+          {
+            num: 4,
+            title: "Additive Identity Element",
+            formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}",
+            passed: false,
+            explanation: "The zero matrix [[0,0],[0,0]] has determinant 0, so it is NOT invertible. Thus 0 ∉ GL₂(R).",
+            counterexample: "Zero matrix [[0,0],[0,0]] is not in GL₂(R) because det(0) = 0."
+          },
+          {
+            num: 5,
+            title: "Additive Inverse Element",
+            formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}",
+            passed: false,
+            explanation: "A + (-A) = 0 matrix, but zero matrix is not in V."
+          },
+          {
+            num: 6,
+            title: "Closure under Scalar Multiplication",
+            formula: "\\alpha \\cdot \\mathbf{u} \\in V",
+            passed: false,
+            explanation: "Multiplying any invertible matrix by scalar α = 0 yields the zero matrix, which is not invertible.",
+            counterexample: "For α = 0 and A = I, 0 · I = 0 matrix ∉ GL₂(R)."
+          },
+          { num: 7, title: "Distributivity over Vector Addition", formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}", passed: true, explanation: "Distributivity holds." },
+          { num: 8, title: "Distributivity over Scalar Addition", formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}", passed: true, explanation: "Distributivity holds." },
+          { num: 9, title: "Compatibility of Scalar Multiplication", formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}", passed: true, explanation: "Compatibility holds." },
+          { num: 10, title: "Scalar Identity Element", formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}", passed: true, explanation: "1 · A = A." }
+        ]
+      },
+      "custom": {
+        name: "Custom Problem Input",
+        question: "Custom structure evaluation. Describe your candidate vector space, set V, vector addition operation, and scalar multiplication operation.",
+        isVectorSpace: true,
+        axioms: [
+          { num: 1, title: "Closure under Addition", formula: "\\mathbf{u} + \\mathbf{v} \\in V", passed: true, explanation: "Check if u + v belongs to V." },
+          { num: 2, title: "Commutativity of Addition", formula: "\\mathbf{u} + \\mathbf{v} = \\mathbf{v} + \\mathbf{u}", passed: true, explanation: "Check if u + v = v + u for all u, v in V." },
+          { num: 3, title: "Associativity of Addition", formula: "\\mathbf{u} + (\\mathbf{v} + \\mathbf{w}) = (\\mathbf{u} + \\mathbf{v}) + \\mathbf{w}", passed: true, explanation: "Check if u + (v + w) = (u + v) + w." },
+          { num: 4, title: "Additive Identity Element", formula: "\\mathbf{u} + \\mathbf{0} = \\mathbf{u}", passed: true, explanation: "Check if there exists 0 in V such that u + 0 = u for all u in V." },
+          { num: 5, title: "Additive Inverse Element", formula: "\\mathbf{u} + (-\\mathbf{u}) = \\mathbf{0}", passed: true, explanation: "Check if for every vector u in V, there exists -u in V such that u + (-u) = 0." },
+          { num: 6, title: "Closure under Scalar Multiplication", formula: "\\alpha \\cdot \\mathbf{u} \\in V", passed: true, explanation: "Check if α * u belongs to V for any scalar α in F." },
+          { num: 7, title: "Distributivity over Vector Addition", formula: "\\alpha(\\mathbf{u} + \\mathbf{v}) = \\alpha \\mathbf{u} + \\alpha \\mathbf{v}", passed: true, explanation: "Check if α * (u + v) = α * u + α * v." },
+          { num: 8, title: "Distributivity over Scalar Addition", formula: "(\\alpha + \\beta)\\mathbf{u} = \\alpha \\mathbf{u} + \\beta \\mathbf{u}", passed: true, explanation: "Check if (α + β)u = α * u + β * u." },
+          { num: 9, title: "Compatibility of Scalar Multiplication", formula: "\\alpha(\\beta \\mathbf{u}) = (\\alpha \\beta)\\mathbf{u}", passed: true, explanation: "Check if α(β * u) = (α * β)u." },
+          { num: 10, title: "Scalar Identity Element", formula: "1 \\cdot \\mathbf{u} = \\mathbf{u}", passed: true, explanation: "Check if 1 · u = u for all u in V." }
+        ]
+      }
+    };
+
+    let currentPresetKey = "r2_standard";
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", () => {
+      loadPreset("r2_standard");
+      drawVectorCanvas();
+      
+      // Render KaTeX if available
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ]
+        });
+      }
+    });
+
+    function loadPreset(key) {
+      currentPresetKey = key;
+      document.getElementById("presetSelect").value = key;
+      const preset = PRESETS[key];
+      if (preset) {
+        document.getElementById("questionInput").value = preset.question;
+        renderAxioms(preset);
+        updateConclusion(preset);
+      }
+      
+      // Update chips active state
+      document.querySelectorAll('.btn-chip').forEach(btn => {
+        btn.classList.remove('active');
+      });
+    }
+
+    function onPresetChange(val) {
+      loadPreset(val);
+    }
+
+    function evaluateStructure() {
+      const preset = PRESETS[currentPresetKey] || PRESETS['custom'];
+      renderAxioms(preset);
+      updateConclusion(preset);
+      
+      // Re-trigger KaTeX
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ]
+        });
+      }
+    }
+
+    function renderAxioms(preset) {
+      const containerAdd = document.getElementById("additionAxiomsContainer");
+      const containerScal = document.getElementById("scalarAxiomsContainer");
+      
+      containerAdd.innerHTML = "";
+      containerScal.innerHTML = "";
+
+      preset.axioms.forEach((ax) => {
+        const isPass = ax.passed;
+        const card = document.createElement("div");
+        card.className = `axiom-card ${isPass ? 'pass' : 'fail'}`;
+        card.id = `axiom-card-${ax.num}`;
+        
+        card.innerHTML = `
+          <div class="axiom-header" onclick="toggleAxiomCard(${ax.num})">
+            <div class="axiom-meta">
+              <div class="axiom-number">${ax.num}</div>
+              <div class="axiom-info">
+                <h3>Axiom ${ax.num}: ${ax.title}</h3>
+                <p>$${ax.formula}$</p>
+              </div>
+            </div>
+            <div class="axiom-badge ${isPass ? 'pass' : 'fail'}">
+              ${isPass 
+                ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> PASSED` 
+                : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> FAILED`
+              }
+            </div>
+            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <div class="axiom-body">
+            <div class="explanation-title">Proof / Axiom Explanation:</div>
+            <div class="explanation-text">${ax.explanation}</div>
+            ${ax.counterexample ? `
+              <div class="counterexample-box">
+                <strong>Counterexample / Failure Reason:</strong> ${ax.counterexample}
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        if (ax.num <= 5) {
+          containerAdd.appendChild(card);
+        } else {
+          containerScal.appendChild(card);
+        }
+      });
+    }
+
+    function toggleAxiomCard(num) {
+      const card = document.getElementById(`axiom-card-${num}`);
+      if (card) {
+        card.classList.toggle("open");
+      }
+    }
+
+    function updateConclusion(preset) {
+      const hero = document.getElementById("conclusionHero");
+      const title = document.getElementById("conclusionTitle");
+      const desc = document.getElementById("conclusionDesc");
+      const icon = document.getElementById("conclusionIcon");
+      const failedContainer = document.getElementById("failedListContainer");
+
+      const failedAxioms = preset.axioms.filter(a => !a.passed);
+      const isVS = preset.isVectorSpace && failedAxioms.length === 0;
+
+      if (isVS) {
+        hero.className = "conclusion-hero pass";
+        icon.innerHTML = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        title.innerText = "It IS a Vector Space";
+        desc.innerText = "All 10 vector space axioms are satisfied by this structure under the given operations!";
+        failedContainer.innerHTML = "";
+      } else {
+        hero.className = "conclusion-hero fail";
+        icon.innerHTML = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        title.innerText = "It IS NOT a Vector Space";
+        desc.innerText = `This structure fails ${failedAxioms.length} vector space axiom(s). To be a vector space, ALL 10 axioms must be satisfied.`;
+        
+        failedContainer.innerHTML = `
+          <div style="font-size: 0.9rem; color: #fca5a5; margin-top: 14px; font-weight: 600;">Failed Axiom(s):</div>
+          <div class="failed-list">
+            ${failedAxioms.map(a => `<div class="failed-tag">Axiom ${a.num}: ${a.title}</div>`).join('')}
+          </div>
+        `;
+      }
+    }
+
+    // Canvas Drawing Logic for 2D Vectors
+    function drawVectorCanvas() {
+      const canvas = document.getElementById("vectorCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Sliders
+      const uX = parseFloat(document.getElementById("uX").value);
+      const uY = parseFloat(document.getElementById("uY").value);
+      const vX = parseFloat(document.getElementById("vX").value);
+      const vY = parseFloat(document.getElementById("vY").value);
+      const scalarC = parseFloat(document.getElementById("scalarC").value);
+
+      document.getElementById("uXVal").innerText = uX;
+      document.getElementById("uYVal").innerText = uY;
+      document.getElementById("vXVal").innerText = vX;
+      document.getElementById("vYVal").innerText = vY;
+      document.getElementById("scalarCVal").innerText = scalarC;
+
+      // Center origin & scale
+      const originX = w / 2;
+      const originY = h / 2;
+      const scale = 25; // 25px per unit
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid
+      ctx.strokeStyle = "#1e293b";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += scale) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 0; y < h; y += scale) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = "#475569";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(w, originY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, h); ctx.stroke();
+
+      // Draw Vector Arrow Helper
+      function drawArrow(fromX, fromY, toX, toY, color, label) {
+        const headlen = 10;
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const angle = Math.atan2(dy, dx);
+
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.lineTo(toX, toY);
+        ctx.fill();
+
+        if (label) {
+          ctx.font = "600 13px 'Fira Code', monospace";
+          ctx.fillText(label, toX + 8, toY - 8);
+        }
+      }
+
+      // 1. Vector u (Indigo)
+      const uPxX = originX + uX * scale;
+      const uPxY = originY - uY * scale;
+      drawArrow(originX, originY, uPxX, uPxY, "#818cf8", `u(${uX}, ${uY})`);
+
+      // 2. Vector v (Cyan)
+      const vPxX = originX + vX * scale;
+      const vPxY = originY - vY * scale;
+      drawArrow(originX, originY, vPxX, vPxY, "#06b6d4", `v(${vX}, ${vY})`);
+
+      // 3. u + v (Green)
+      const sumX = uX + vX;
+      const sumY = uY + vY;
+      const sumPxX = originX + sumX * scale;
+      const sumPxY = originY - sumY * scale;
+      drawArrow(originX, originY, sumPxX, sumPxY, "#34d399", `u+v(${sumX}, ${sumY})`);
+
+      // 4. α * u (Amber dashed / arrow)
+      const cuX = uX * scalarC;
+      const cuY = uY * scalarC;
+      const cuPxX = originX + cuX * scale;
+      const cuPxY = originY - cuY * scale;
+      
+      ctx.setLineDash([4, 4]);
+      drawArrow(originX, originY, cuPxX, cuPxY, "#fbbf24", `α·u(${cuX.toFixed(1)}, ${cuY.toFixed(1)})`);
+      ctx.setLineDash([]);
+    }
+  </script>
+</body>
+</html>
